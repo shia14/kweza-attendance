@@ -29,16 +29,15 @@ npm install
 npx expo start
 ```
 
-## Hosting on Vercel + Turso (Admin + API + Database)
+## Hosting on Vercel + Supabase (Admin + API + Database)
 
-1. Create a Turso database and copy the **database URL** and **auth token**.
+1. Create a Supabase Postgres database and copy the **connection string**.
 2. Create a Vercel project with **Root Directory** set to `frontend`.
 3. Add these Vercel Environment Variables:
-   - `TURSO_DATABASE_URL`
-   - `TURSO_AUTH_TOKEN`
+   - `SUPABASE_DATABASE_URL` (or `SUPABASE_DB_URL`) with your connection string
    - `JWT_SECRET`
    - `QR_VALUE` (default: `KWEZA-ATTENDANCE-CHECKIN`)
-   - `VITE_API_BASE` (optional if using same-origin `/api`)
+   - `VITE_API_BASE` (leave empty to use same-origin `/api`)
 4. Deploy.
 
 ## Expo App (Hosted API)

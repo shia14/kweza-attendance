@@ -5,12 +5,11 @@ import { emptyResponse, getAuthToken, getJson, jsonResponse } from './_shared.js
 
 const SECRET_KEY = process.env.JWT_SECRET || 'kweza_secret_key';
 
-export default async function handler(request) {
-  if (request.method === 'OPTIONS') return emptyResponse();
-  if (request.method !== 'POST') {
-    return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
-  }
+export function OPTIONS() {
+  return emptyResponse();
+}
 
+export async function POST(request) {
   try {
     await initDb();
     const token = getAuthToken(request);
