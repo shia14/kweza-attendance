@@ -1,20 +1,56 @@
-# React + Vite
+# Kweza Attendance
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
- 
- 
- readme file for the admin dashboard. 
- 
+## Project Structure
 
-Currently, two official plugins are available:
+- `frontend`: Admin dashboard (Vite + React) with Vercel Functions API routes in `frontend/api/`.
+- `expo`: Mobile app (Expo) for QR scanning.
+- `backend`: Legacy local Express + SQLite server (not used when hosting on Vercel).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Local Development
 
-## React Compiler
+Admin dashboard:
+```
+cd frontend
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Local backend (SQLite):
+```
+cd backend
+npm install
+npm start
+```
 
-## Expanding the ESLint configuration
+Expo app:
+```
+cd expo
+npm install
+npx expo start
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Hosting on Vercel (Admin + API + Database)
+
+1. Create a Vercel project with **Root Directory** set to `frontend`.
+2. Add a Postgres database via the Vercel Marketplace (Neon or another provider).
+3. Add these Vercel Environment Variables:
+   - `POSTGRES_URL` (or set it to the same value as `DATABASE_URL` from your provider)
+   - `JWT_SECRET`
+   - `QR_VALUE` (default: `KWEZA-ATTENDANCE-CHECKIN`)
+   - `VITE_API_BASE` (optional if using same-origin `/api`)
+4. Deploy.
+
+## Expo App (Hosted API)
+
+Point the Expo app to your hosted API:
+```
+EXPO_PUBLIC_API_BASE=https://your-vercel-domain
+```
+
+## Admin Login
+
+Default seed credentials:
+- Username: `admin`
+- Password: `admin123`
+
+Change the password after first login.

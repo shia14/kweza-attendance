@@ -3,6 +3,10 @@ import { Lock, Save, AlertCircle, CheckCircle2, QrCode } from 'lucide-react';
 import qrCodeSvg from '../assets/attendance-qr.svg';
 import './Security.css';
 
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
 const Security = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -20,7 +24,7 @@ const Security = () => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/change-password', {
+      const response = await fetch(`${API_BASE}/api/change-password`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

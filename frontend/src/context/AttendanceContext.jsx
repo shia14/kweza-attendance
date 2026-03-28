@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV ? 'http://localhost:5000' : '');
+
 const AttendanceContext = createContext();
 
 export const useAttendance = () => useContext(AttendanceContext);
@@ -18,10 +22,10 @@ export const AttendanceProvider = ({ children }) => {
   const fetchData = async () => {
     try {
       const [pRes, aRes, rRes, sRes] = await Promise.all([
-        fetch('http://localhost:5000/api/people'),
-        fetch('http://localhost:5000/api/attendance'),
-        fetch('http://localhost:5000/api/reasons'),
-        fetch('http://localhost:5000/api/shifts')
+        fetch(`${API_BASE}/api/people`),
+        fetch(`${API_BASE}/api/attendance`),
+        fetch(`${API_BASE}/api/reasons`),
+        fetch(`${API_BASE}/api/shifts`)
       ]);
 
       const [pData, aData, rData, sData] = await Promise.all([
@@ -44,7 +48,7 @@ export const AttendanceProvider = ({ children }) => {
   }, []);
 
   const addPerson = async (person) => {
-    const res = await fetch('http://localhost:5000/api/people', {
+    const res = await fetch(`${API_BASE}/api/people`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(person),
@@ -54,7 +58,7 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const updateShiftRules = async (rules) => {
-    const res = await fetch('http://localhost:5000/api/shifts', {
+    const res = await fetch(`${API_BASE}/api/shifts`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(rules),
@@ -65,7 +69,7 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const addAbsenceReason = async (personId, date, reason) => {
-    const res = await fetch('http://localhost:5000/api/reasons', {
+    const res = await fetch(`${API_BASE}/api/reasons`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ personId, date, reason }),
