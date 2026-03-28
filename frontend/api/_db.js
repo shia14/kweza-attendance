@@ -10,10 +10,21 @@ const connectionString =
   process.env.POSTGRES_URL ||
   process.env.POSTGRES_URL_NON_POOLING;
 
+const connectionLabel =
+  process.env.SUPABASE_DATABASE_URL ? 'SUPABASE_DATABASE_URL' :
+  process.env.SUPABASE_DB_URL ? 'SUPABASE_DB_URL' :
+  process.env.DATABASE_URL ? 'DATABASE_URL' :
+  process.env.POSTGRES_URL ? 'POSTGRES_URL' :
+  process.env.POSTGRES_URL_NON_POOLING ? 'POSTGRES_URL_NON_POOLING' :
+  null;
+
 const pool = connectionString
   ? (globalThis.__pgPool ||
       new Pool({
         connectionString,
+        max: 1,
+        allowExitOnIdle: true,
+        connectionTimeoutMillis: 10000,
         ssl: { rejectUnauthorized: false },
       }))
   : null;
@@ -27,7 +38,19 @@ let initialized = false;
 export async function initDb() {
   if (initialized) return;
   if (!pool) {
-    throw new Error('Missing SUPABASE_DATABASE_URL');
+    throw new Error('Missing database connection string. Set POSTGRES_URL or SUPABASE_DATABASE_URL in Vercel.');
+  }
+
+  try {
+    const parsed = new URL(connectionString);
+    console.log('Initializing database with', {
+      source: connectionLabel,
+      host: parsed.hostname,
+      port: parsed.port,
+      database: parsed.pathname?.replace('/', ''),
+    });
+  } catch {
+    console.log('Initializing database with', { source: connectionLabel });
   }
 
   await pool.query(`

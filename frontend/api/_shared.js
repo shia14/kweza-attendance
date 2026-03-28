@@ -38,8 +38,6 @@ export function getAuthToken(request) {
 
 export function handleServerError(err) {
   console.error('API error:', err);
-  const message = err?.message?.includes('Missing SUPABASE_DATABASE_URL')
-    ? 'Database is not configured. Set SUPABASE_DATABASE_URL in Vercel.'
-    : 'Server error';
+  const message = err?.message || 'Server error';
   return jsonResponse({ success: false, message }, 500);
 }
