@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db, initDb } from './_db.js';
+import { initDb, pool } from './_db.js';
 import { emptyResponse, getAuthToken, getJson, jsonResponse } from './_shared.js';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'kweza_secret_key';
@@ -28,10 +28,10 @@ export default async function handler(request) {
       return jsonResponse({ success: false, message: 'Missing data' }, 400);
     }
 
-    const adminResult = await db.execute({
-      sql: 'SELECT id, password FROM admin WHERE id = ?',
-      args: [decoded.id],
-    });
+    const adminResult = await pool.query(
+      'SELECT id, password FROM admin WHERE id = $1',
+      [decoded.id]
+    );
     const admin = adminResult.rows[0];
 
     if (!admin || !bcrypt.compareSync(currentPassword, admin.password)) {
@@ -39,10 +39,10 @@ export default async function handler(request) {
     }
 
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
-    await db.execute({
-      sql: 'UPDATE admin SET password = ? WHERE id = ?',
-      args: [hashedPassword, admin.id],
-    });
+    await pool.query(
+      'UPDATE admin SET password = $1 WHERE id = $2',
+      [hashedPassword, admin.id]
+    );
 
     return jsonResponse({ success: true, message: 'Password updated successfully' });
   } catch (err) {

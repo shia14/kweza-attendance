@@ -1,14 +1,13 @@
-import { db, initDb } from './_db.js';
+import { initDb, pool } from './_db.js';
 import { emptyResponse, getJson, jsonResponse } from './_shared.js';
 
 const QR_VALUE = process.env.QR_VALUE || 'KWEZA-ATTENDANCE-CHECKIN';
 
-export default async function handler(request) {
-  if (request.method === 'OPTIONS') return emptyResponse();
-  if (request.method !== 'POST') {
-    return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
-  }
+export function OPTIONS() {
+  return emptyResponse();
+}
 
+export async function POST(request) {
   try {
     await initDb();
     const { name, idNumber, scanType, qrValue } = await getJson(request);
@@ -22,12 +21,12 @@ export default async function handler(request) {
     }
 
     const scannedAt = new Date().toISOString();
-    const insert = await db.execute({
-      sql: `INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at)
-        VALUES (?, ?, ?, ?, ?)
-        RETURNING scanned_at`,
-      args: [name, idNumber, scanType, qrValue, scannedAt],
-    });
+    const insert = await pool.query(
+      `INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING scanned_at`,
+      [name, idNumber, scanType, qrValue, scannedAt]
+    );
 
     const recordedAt = insert.rows[0]?.scanned_at || scannedAt;
     return jsonResponse({ success: true, scannedAt: recordedAt });

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db, initDb } from './_db.js';
+import { initDb, pool } from './_db.js';
 import { emptyResponse, getJson, jsonResponse } from './_shared.js';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'kweza_secret_key';
@@ -18,10 +18,10 @@ export async function POST(request) {
       return jsonResponse({ success: false, message: 'Missing credentials' }, 400);
     }
 
-    const result = await db.execute({
-      sql: 'SELECT id, username, password FROM admin WHERE username = ?',
-      args: [username],
-    });
+    const result = await pool.query(
+      'SELECT id, username, password FROM admin WHERE username = $1',
+      [username]
+    );
     const admin = result.rows[0];
 
     if (admin && bcrypt.compareSync(password, admin.password)) {

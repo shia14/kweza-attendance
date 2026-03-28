@@ -1,32 +1,34 @@
-import { db, initDb } from './_db.js';
+import { initDb, pool } from './_db.js';
 import { emptyResponse, getJson, jsonResponse } from './_shared.js';
 
-export default async function handler(request) {
-  if (request.method === 'OPTIONS') return emptyResponse();
+export function OPTIONS() {
+  return emptyResponse();
+}
 
+export async function GET() {
   try {
     await initDb();
+    const result = await pool.query('SELECT * FROM absence_reasons ORDER BY id');
+    return jsonResponse(result.rows);
+  } catch (err) {
+    return jsonResponse({ success: false, message: 'Server error' }, 500);
+  }
+}
 
-    if (request.method === 'GET') {
-      const result = await db.execute({ sql: 'SELECT * FROM absence_reasons ORDER BY id' });
-      return jsonResponse(result.rows);
+export async function POST(request) {
+  try {
+    await initDb();
+    const { personId, date, reason } = await getJson(request);
+    if (!personId || !date || !reason) {
+      return jsonResponse({ success: false, message: 'Missing data' }, 400);
     }
 
-    if (request.method === 'POST') {
-      const { personId, date, reason } = await getJson(request);
-      if (!personId || !date || !reason) {
-        return jsonResponse({ success: false, message: 'Missing data' }, 400);
-      }
+    await pool.query(
+      'INSERT INTO absence_reasons (person_id, date, reason) VALUES ($1, $2, $3)',
+      [personId, date, reason]
+    );
 
-      await db.execute({
-        sql: 'INSERT INTO absence_reasons (person_id, date, reason) VALUES (?, ?, ?)',
-        args: [personId, date, reason],
-      });
-
-      return jsonResponse({ success: true });
-    }
-
-    return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
+    return jsonResponse({ success: true });
   } catch (err) {
     return jsonResponse({ success: false, message: 'Server error' }, 500);
   }

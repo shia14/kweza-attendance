@@ -1,36 +1,38 @@
-import { db, initDb } from './_db.js';
+import { initDb, pool } from './_db.js';
 import { emptyResponse, getJson, jsonResponse } from './_shared.js';
 
-export default async function handler(request) {
-  if (request.method === 'OPTIONS') return emptyResponse();
+export function OPTIONS() {
+  return emptyResponse();
+}
 
+export async function GET() {
   try {
     await initDb();
+    const result = await pool.query('SELECT * FROM people ORDER BY id');
+    return jsonResponse(result.rows);
+  } catch (err) {
+    return jsonResponse({ success: false, message: 'Server error' }, 500);
+  }
+}
 
-    if (request.method === 'GET') {
-      const result = await db.execute({ sql: 'SELECT * FROM people ORDER BY id' });
-      return jsonResponse(result.rows);
+export async function POST(request) {
+  try {
+    await initDb();
+    const { name, shift, mobile } = await getJson(request);
+    if (!name || !shift) {
+      return jsonResponse({ success: false, message: 'Missing data' }, 400);
     }
 
-    if (request.method === 'POST') {
-      const { name, shift, mobile } = await getJson(request);
-      if (!name || !shift) {
-        return jsonResponse({ success: false, message: 'Missing data' }, 400);
-      }
+    const insert = await pool.query(
+      'INSERT INTO people (name, shift, mobile) VALUES ($1, $2, $3) RETURNING *',
+      [name, shift, mobile || null]
+    );
 
-      const insert = await db.execute({
-        sql: 'INSERT INTO people (name, shift, mobile) VALUES (?, ?, ?) RETURNING *',
-        args: [name, shift, mobile || null],
-      });
+    const created = insert.rows[0];
+    if (created) return jsonResponse(created);
 
-      const created = insert.rows[0];
-      if (created) return jsonResponse(created);
-
-      const fallback = await db.execute({ sql: 'SELECT * FROM people ORDER BY id DESC LIMIT 1' });
-      return jsonResponse(fallback.rows[0] || {});
-    }
-
-    return jsonResponse({ success: false, message: 'Method not allowed' }, 405);
+    const fallback = await pool.query('SELECT * FROM people ORDER BY id DESC LIMIT 1');
+    return jsonResponse(fallback.rows[0] || {});
   } catch (err) {
     return jsonResponse({ success: false, message: 'Server error' }, 500);
   }
