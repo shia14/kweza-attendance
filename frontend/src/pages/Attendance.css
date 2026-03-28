@@ -110,7 +110,7 @@
 
 .status-text.attended { background: #dcfce7; color: #15803d; }
 .status-text.missing { background: #fee2e2; color: #ef4444; }
-.status-text.absent-(reasoned) { background: #e0f2fe; color: #0369a1; }
+.status-text.absent-reasoned { background: #e0f2fe; color: #0369a1; }
 
 .icon-success { color: #10b981; }
 .icon-error { color: #ef4444; }

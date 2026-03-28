@@ -83,7 +83,12 @@ const Attendance = () => {
                 </div>
                 <div className="status-indicator">
                   {getStatusIcon(status)}
-                  <span className={`status-text ${status.toLowerCase().replace(' ', '-')}`}>
+                  <span
+                    className={`status-text ${status
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, '-')
+                      .replace(/(^-|-$)/g, '')}`}
+                  >
                     {status}
                   </span>
                 </div>
