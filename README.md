@@ -29,12 +29,13 @@ npm install
 npx expo start
 ```
 
-## Hosting on Vercel (Admin + API + Database)
+## Hosting on Vercel + Turso (Admin + API + Database)
 
-1. Create a Vercel project with **Root Directory** set to `frontend`.
-2. Add a Postgres database via the Vercel Marketplace (Neon or another provider).
+1. Create a Turso database and copy the **database URL** and **auth token**.
+2. Create a Vercel project with **Root Directory** set to `frontend`.
 3. Add these Vercel Environment Variables:
-   - `POSTGRES_URL` (or set it to the same value as `DATABASE_URL` from your provider)
+   - `TURSO_DATABASE_URL`
+   - `TURSO_AUTH_TOKEN`
    - `JWT_SECRET`
    - `QR_VALUE` (default: `KWEZA-ATTENDANCE-CHECKIN`)
    - `VITE_API_BASE` (optional if using same-origin `/api`)

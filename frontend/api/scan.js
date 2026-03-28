@@ -1,4 +1,4 @@
-import { initDb, sql } from './_db.js';
+import { db, initDb } from './_db.js';
 import { emptyResponse, getJson, jsonResponse } from './_shared.js';
 
 const QR_VALUE = process.env.QR_VALUE || 'KWEZA-ATTENDANCE-CHECKIN';
@@ -21,14 +21,16 @@ export default async function handler(request) {
       return jsonResponse({ success: false, message: 'Invalid QR code' }, 400);
     }
 
-    const insert = await sql`
-      INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at)
-      VALUES (${name}, ${idNumber}, ${scanType}, ${qrValue}, NOW())
-      RETURNING scanned_at
-    `;
+    const scannedAt = new Date().toISOString();
+    const insert = await db.execute({
+      sql: `INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at)
+        VALUES (?, ?, ?, ?, ?)
+        RETURNING scanned_at`,
+      args: [name, idNumber, scanType, qrValue, scannedAt],
+    });
 
-    const scannedAt = insert.rows[0]?.scanned_at;
-    return jsonResponse({ success: true, scannedAt });
+    const recordedAt = insert.rows[0]?.scanned_at || scannedAt;
+    return jsonResponse({ success: true, scannedAt: recordedAt });
   } catch (err) {
     return jsonResponse({ success: false, message: 'Server error' }, 500);
   }
