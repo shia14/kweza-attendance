@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { initDb, pool } from './_db.js';
-import { emptyResponse, getJson, jsonResponse } from './_shared.js';
+import { emptyResponse, getJson, handleServerError, jsonResponse } from './_shared.js';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'kweza_secret_key';
 
@@ -35,6 +35,6 @@ export async function POST(request) {
 
     return jsonResponse({ success: false, message: 'Invalid credentials' }, 401);
   } catch (err) {
-    return jsonResponse({ success: false, message: 'Server error' }, 500);
+    return handleServerError(err);
   }
 }

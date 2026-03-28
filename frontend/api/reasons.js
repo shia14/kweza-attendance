@@ -1,5 +1,5 @@
 import { initDb, pool } from './_db.js';
-import { emptyResponse, getJson, jsonResponse } from './_shared.js';
+import { emptyResponse, getJson, handleServerError, jsonResponse } from './_shared.js';
 
 export function OPTIONS() {
   return emptyResponse();
@@ -11,7 +11,7 @@ export async function GET() {
     const result = await pool.query('SELECT * FROM absence_reasons ORDER BY id');
     return jsonResponse(result.rows);
   } catch (err) {
-    return jsonResponse({ success: false, message: 'Server error' }, 500);
+    return handleServerError(err);
   }
 }
 
@@ -30,6 +30,6 @@ export async function POST(request) {
 
     return jsonResponse({ success: true });
   } catch (err) {
-    return jsonResponse({ success: false, message: 'Server error' }, 500);
+    return handleServerError(err);
   }
 }

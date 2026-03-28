@@ -1,5 +1,5 @@
 import { initDb, pool } from './_db.js';
-import { emptyResponse, getJson, jsonResponse } from './_shared.js';
+import { emptyResponse, getJson, handleServerError, jsonResponse } from './_shared.js';
 
 const QR_VALUE = process.env.QR_VALUE || 'KWEZA-ATTENDANCE-CHECKIN';
 
@@ -31,6 +31,6 @@ export async function POST(request) {
     const recordedAt = insert.rows[0]?.scanned_at || scannedAt;
     return jsonResponse({ success: true, scannedAt: recordedAt });
   } catch (err) {
-    return jsonResponse({ success: false, message: 'Server error' }, 500);
+    return handleServerError(err);
   }
 }
