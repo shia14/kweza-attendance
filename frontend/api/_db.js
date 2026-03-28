@@ -10,6 +10,24 @@ const connectionString =
   process.env.POSTGRES_URL ||
   process.env.POSTGRES_URL_NON_POOLING;
 
+function sanitizeConnectionString(value) {
+  if (!value) return value;
+
+  try {
+    const parsed = new URL(value);
+    parsed.searchParams.delete('sslmode');
+    parsed.searchParams.delete('sslcert');
+    parsed.searchParams.delete('sslkey');
+    parsed.searchParams.delete('sslrootcert');
+    parsed.searchParams.delete('ssl');
+    return parsed.toString();
+  } catch {
+    return value;
+  }
+}
+
+const sanitizedConnectionString = sanitizeConnectionString(connectionString);
+
 const connectionLabel =
   process.env.SUPABASE_DATABASE_URL ? 'SUPABASE_DATABASE_URL' :
   process.env.SUPABASE_DB_URL ? 'SUPABASE_DB_URL' :
@@ -21,7 +39,7 @@ const connectionLabel =
 const pool = connectionString
   ? (globalThis.__pgPool ||
       new Pool({
-        connectionString,
+        connectionString: sanitizedConnectionString,
         max: 1,
         allowExitOnIdle: true,
         connectionTimeoutMillis: 10000,
