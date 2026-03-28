@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/blanched_almond">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/scanTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/scan_title"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/scanInstructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/scan_instructions"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="15sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/arrivalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/arrival_button"
+            android:textAllCaps="false"
+            android:textColor="@color/blanched_almond"
+            app:backgroundTint="@color/cerulean_blue"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/departureButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/departure_button"
+            android:textAllCaps="false"
+            android:textColor="@color/blanched_almond"
+            app:backgroundTint="@color/cerulean_blue"
+            app:cornerRadius="12dp" />
+
+        <TextView
+            android:id="@+id/arrivalStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/arrival_not_scanned"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/departureStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/departure_not_scanned"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/lastScanStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/cerulean_blue"
+            android:textSize="14sp" />
+    </LinearLayout>
+</ScrollView>

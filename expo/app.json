@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Kweza Attendance",
+    "slug": "kweza-attendance",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#FFEBCD"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.kweza.attendance",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFEBCD"
+      }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Kweza Attendance to access your camera",
+          "barcodeScannerEnabled": true
+        }
+      ]
+    ]
+  }
+}

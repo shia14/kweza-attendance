@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.KwezaAttendance" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/cerulean_blue</item>
+        <item name="colorPrimaryVariant">@color/cerulean_blue</item>
+        <item name="colorOnPrimary">@color/blanched_almond</item>
+        <item name="colorSecondary">@color/cerulean_blue</item>
+        <item name="colorSecondaryVariant">@color/cerulean_blue</item>
+        <item name="colorOnSecondary">@color/blanched_almond</item>
+        <item name="android:colorBackground">@color/blanched_almond</item>
+        <item name="colorSurface">@color/blanched_almond</item>
+        <item name="colorOnSurface">@color/cerulean_blue</item>
+        <item name="android:statusBarColor">@color/cerulean_blue</item>
+        <item name="android:navigationBarColor">@color/cerulean_blue</item>
+        <item name="android:textColorPrimary">@color/cerulean_blue</item>
+        <item name="android:textColorSecondary">@color/cerulean_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

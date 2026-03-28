@@ -1,0 +1,115 @@
+.security-container {
+  padding: 2rem;
+  width: 100%;
+}
+
+.security-card {
+  max-width: 600px;
+  padding: 2.5rem;
+}
+
+.security-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.security-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.security-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.security-badge.error { background: #ffeff0; color: #e11d48; border: 1px solid #fee2e2; }
+.security-badge.success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+
+.security-btn { margin-top: 1rem; }
+
+.qr-card {
+  margin-top: 1.5rem;
+}
+
+.qr-subtitle {
+  color: var(--text-sub);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.qr-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.qr-code {
+  background: var(--bg-sub);
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border);
+}
+
+.qr-code img {
+  display: block;
+  width: 220px;
+  height: 220px;
+}
+
+.qr-meta {
+  flex: 1;
+  min-width: 220px;
+}
+
+.qr-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.qr-value {
+  background: var(--bg-sub);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  word-break: break-word;
+}

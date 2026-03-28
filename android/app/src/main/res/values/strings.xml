@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Kweza Attendance</string>
+
+    <string name="login_title">Kweza Attendance</string>
+    <string name="login_subtitle">Log in to scan the QR code</string>
+    <string name="name_label">Full name</string>
+    <string name="id_label">ID / Mobile number</string>
+    <string name="login_button">Log in</string>
+
+    <string name="scan_title">Scan Attendance</string>
+    <string name="scan_instructions">Scan once when you arrive and once when you leave.</string>
+    <string name="arrival_button">Scan Arrival</string>
+    <string name="departure_button">Scan Departure</string>
+
+    <string name="arrival_not_scanned">Arrival: Not scanned yet</string>
+    <string name="departure_not_scanned">Departure: Not scanned yet</string>
+    <string name="arrival_scanned_format">Arrival: %1$s at %2$s</string>
+    <string name="departure_scanned_format">Departure: %1$s at %2$s</string>
+    <string name="last_scan_format">Last scan: %1$s at %2$s</string>
+
+    <string name="scan_prompt">Align the QR code inside the frame</string>
+    <string name="scan_cancelled">Scan cancelled</string>
+    <string name="validation_required">Required</string>
+    <string name="user_info_format">%1$s  |  ID: %2$s</string>
+</resources>
