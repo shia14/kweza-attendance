@@ -38,41 +38,36 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="login-full-page">
-      <div className="login-decorative-bg"></div>
       <div className="login-card-container">
-        <div className="login-card-inner">
-          <div className="login-header">
-            <img src="/KWEZA FINANCIAL SOLUTIONS MAIN LOGO.png" alt="Kweza Logo" className="login-logo" />
-            <h1>Welcome to My Kweza</h1>
-            <p>Admin Portal & System Management</p>
-          </div>
+        <div className="login-logo-section">
+          <img src="/KWEZA FINANCIAL SOLUTIONS MAIN LOGO.png" alt="Kweza Logo" className="login-logo" />
+          <p className="login-tagline">Attendance System Admin</p>
+        </div>
+
+        <div className="login-form-section">
+          <h2>Welcome back!</h2>
+          <p>Please enter your credentials to manage the system</p>
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="login-form-group">
-              <label>Username</label>
-              <div className="input-with-icon">
-                <User size={18} />
-                <input 
-                  type="text" 
-                  placeholder="Enter administrator username" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required 
-                />
-              </div>
+              <label><User size={16} /> Username</label>
+              <input 
+                type="text" 
+                placeholder="Enter username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required 
+              />
             </div>
             <div className="login-form-group">
-              <label>Password</label>
-              <div className="input-with-icon">
-                <Lock size={18} />
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+              <label><Lock size={16} /> Password</label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
 
             {error && (
@@ -83,16 +78,16 @@ const Login = ({ onLogin }) => {
             )}
 
             <button type="submit" className="login-btn" disabled={loading}>
-              {loading ? <span className="loader"></span> : <span>SIGN IN TO DASHBOARD</span>}
+              {loading ? <span className="loader"></span> : <LogIn size={20} />}
+              <span>{loading ? 'Logging in...' : 'Sign In'}</span>
             </button>
           </form>
-
-          <div className="login-footer-text">
-            <p>Professional financial services for Malawi & Community.</p>
-            <p className="copyright">© 2026 Kweza Financial Solutions. All rights reserved.</p>
-          </div>
         </div>
       </div>
+      
+      <footer className="login-footer">
+         &copy; 2026 Kweza Financial Solutions. All rights reserved.
+      </footer>
     </div>
   );
 };
