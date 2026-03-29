@@ -18,6 +18,8 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS people (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    member_id TEXT UNIQUE,
+    pin TEXT,
     shift TEXT NOT NULL,
     mobile TEXT,
     status TEXT DEFAULT 'Active'

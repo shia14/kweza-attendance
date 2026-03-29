@@ -53,9 +53,9 @@ app.get('/api/people', (req, res) => {
 });
 
 app.post('/api/people', (req, res) => {
-  const { name, shift, mobile } = req.body;
-  const info = db.prepare('INSERT INTO people (name, shift, mobile) VALUES (?, ?, ?)').run(name, shift, mobile);
-  res.json({ id: info.lastInsertRowid, name, shift, mobile, status: 'Active' });
+  const { name, shift, mobile, memberId, pin } = req.body;
+  const info = db.prepare('INSERT INTO people (name, shift, mobile, member_id, pin) VALUES (?, ?, ?, ?, ?)').run(name, shift, mobile, memberId, pin);
+  res.json({ id: info.lastInsertRowid, name, shift, mobile, member_id: memberId, pin, status: 'Active' });
 });
 
 app.get('/api/attendance', (req, res) => {
@@ -88,11 +88,22 @@ app.put('/api/shifts', (req, res) => {
   res.json({ success: true });
 });
 
+// --- Worker Routes ---
+app.post('/api/worker/login', (req, res) => {
+  const { memberId, pin } = req.body;
+  const worker = db.prepare('SELECT * FROM people WHERE member_id = ? AND pin = ? AND status = "Active"').get(memberId, pin);
+  if (worker) {
+    res.json({ success: true, worker });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid Member ID or PIN' });
+  }
+});
+
 // --- Scan Routes ---
 app.post('/api/scan', (req, res) => {
-  const { name, idNumber, scanType, qrValue } = req.body || {};
+  const { name, idNumber, qrValue } = req.body || {};
 
-  if (!name || !idNumber || !scanType || !qrValue) {
+  if (!name || !idNumber || !qrValue) {
     return res.status(400).json({ success: false, message: 'Missing scan data' });
   }
 
@@ -100,12 +111,28 @@ app.post('/api/scan', (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid QR code' });
   }
 
+  // Find worker to see their last scan today
+  const worker = db.prepare('SELECT * FROM people WHERE member_id = ?').get(idNumber);
+  if (!worker) {
+    return res.status(404).json({ success: false, message: 'Worker not found' });
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  const lastScan = db.prepare(
+    'SELECT * FROM scan_events WHERE id_number = ? AND DATE(scanned_at) = ? ORDER BY scanned_at DESC LIMIT 1'
+  ).get(idNumber, today);
+
+  let scanType = 'arrival';
+  if (lastScan && lastScan.scan_type === 'arrival') {
+    scanType = 'departure';
+  }
+
   const scannedAt = new Date().toISOString();
   db.prepare(
     'INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at) VALUES (?, ?, ?, ?, ?)'
   ).run(name, idNumber, scanType, qrValue, scannedAt);
 
-  res.json({ success: true, scannedAt });
+  res.json({ success: true, scanType, scannedAt });
 });
 
 app.listen(PORT, () => {

@@ -18,14 +18,14 @@ export async function GET() {
 export async function POST(request) {
   try {
     await initDb();
-    const { name, shift, mobile } = await getJson(request);
+    const { name, shift, mobile, memberId, pin } = await getJson(request);
     if (!name || !shift) {
       return jsonResponse({ success: false, message: 'Missing data' }, 400);
     }
 
     const insert = await pool.query(
-      'INSERT INTO people (name, shift, mobile) VALUES ($1, $2, $3) RETURNING *',
-      [name, shift, mobile || null]
+      'INSERT INTO people (name, shift, mobile, member_id, pin) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, shift, mobile || null, memberId || null, pin || null]
     );
 
     const created = insert.rows[0];

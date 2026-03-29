@@ -81,6 +81,8 @@ export async function initDb() {
     CREATE TABLE IF NOT EXISTS people (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
+      member_id TEXT UNIQUE,
+      pin TEXT,
       shift TEXT NOT NULL,
       mobile TEXT,
       status TEXT DEFAULT 'Active'
@@ -136,6 +138,14 @@ export async function initDb() {
         ('Morning', '07:00', '08:30', '12:30'),
         ('Afternoon', '13:00', '14:30', '18:30')`
     );
+  }
+
+  // Ensure new columns exist for existing tables
+  try {
+    await pool.query('ALTER TABLE people ADD COLUMN IF NOT EXISTS member_id TEXT UNIQUE');
+    await pool.query('ALTER TABLE people ADD COLUMN IF NOT EXISTS pin TEXT');
+  } catch (err) {
+    console.log('Columns might already exist or table not created yet');
   }
 
   initialized = true;

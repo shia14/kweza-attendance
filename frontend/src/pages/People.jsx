@@ -7,16 +7,17 @@ const People = () => {
   const { people, addPerson } = useAttendance();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newPerson, setNewPerson] = useState({ name: '', shift: 'Morning', mobile: '', status: 'Active' });
+  const [newPerson, setNewPerson] = useState({ name: '', shift: 'Morning', mobile: '', status: 'Active', memberId: '', pin: '' });
 
   const filteredPeople = people.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (p.member_id && p.member_id.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addPerson(newPerson);
-    setNewPerson({ name: '', shift: 'Morning', mobile: '', status: 'Active' });
+    setNewPerson({ name: '', shift: 'Morning', mobile: '', status: 'Active', memberId: '', pin: '' });
     setShowAddModal(false);
   };
 
@@ -119,6 +120,27 @@ const People = () => {
                   <option value="Morning">Morning (7 AM - 12 PM)</option>
                   <option value="Afternoon">Afternoon (1 PM - 6 PM)</option>
                 </select>
+              </div>
+              <div className="form-group">
+                <label>Member ID</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. XOU-2028-003"
+                  value={newPerson.memberId}
+                  onChange={(e) => setNewPerson({...newPerson, memberId: e.target.value})}
+                  required 
+                />
+              </div>
+              <div className="form-group">
+                <label>PIN Code</label>
+                <input 
+                  type="password" 
+                  maxLength="4"
+                  placeholder="4-digit PIN"
+                  value={newPerson.pin}
+                  onChange={(e) => setNewPerson({...newPerson, pin: e.target.value})}
+                  required 
+                />
               </div>
               <div className="form-group">
                 <label>Mobile Number</label>

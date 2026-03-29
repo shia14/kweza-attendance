@@ -10,14 +10,28 @@ export function OPTIONS() {
 export async function POST(request) {
   try {
     await initDb();
-    const { name, idNumber, scanType, qrValue } = await getJson(request);
+    const { name, idNumber, qrValue } = await getJson(request);
 
-    if (!name || !idNumber || !scanType || !qrValue) {
+    if (!name || !idNumber || !qrValue) {
       return jsonResponse({ success: false, message: 'Missing scan data' }, 400);
     }
 
-    if (qrValue !== QR_VALUE) {
+    if (qrValue !== (process.env.QR_VALUE || 'KWEZA-ATTENDANCE-CHECKIN')) {
       return jsonResponse({ success: false, message: 'Invalid QR code' }, 400);
+    }
+
+    // Determine scan type
+    const today = new Date().toISOString().split('T')[0];
+    const lastScanResult = await pool.query(
+      `SELECT scan_type FROM scan_events 
+       WHERE id_number = $1 AND DATE(scanned_at) = $2 
+       ORDER BY scanned_at DESC LIMIT 1`,
+      [idNumber, today]
+    );
+
+    let scanType = 'arrival';
+    if (lastScanResult.rows.length > 0 && lastScanResult.rows[0].scan_type === 'arrival') {
+      scanType = 'departure';
     }
 
     const scannedAt = new Date().toISOString();
@@ -29,7 +43,7 @@ export async function POST(request) {
     );
 
     const recordedAt = insert.rows[0]?.scanned_at || scannedAt;
-    return jsonResponse({ success: true, scannedAt: recordedAt });
+    return jsonResponse({ success: true, scanType, scannedAt: recordedAt });
   } catch (err) {
     return handleServerError(err);
   }
