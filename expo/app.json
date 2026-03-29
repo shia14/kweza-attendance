@@ -9,7 +9,9 @@
     "splash": {
       "backgroundColor": "#FFEBCD"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -18,7 +20,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFEBCD"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       [
@@ -28,6 +34,12 @@
           "barcodeScannerEnabled": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d96ab8ce-1b5d-45b2-84d2-92597d1adc0f"
+      }
+    },
+    "owner": "kalifabina"
   }
 }
