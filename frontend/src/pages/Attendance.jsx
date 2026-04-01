@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, 
   XCircle, 
-  AlertCircle, 
   Clock, 
-  MoreHorizontal,
   PlusCircle,
   HelpCircle
 } from 'lucide-react';
@@ -13,21 +12,13 @@ import { format } from 'date-fns';
 import './Attendance.css';
 
 const Attendance = () => {
-  const { people, attendanceLogs, checkAttendanceStatus, addAbsenceReason, shiftRules } = useAttendance();
-  const [selectedPerson, setSelectedPerson] = useState(null);
-  const [reason, setReason] = useState('');
+  const { people, attendanceLogs, checkAttendanceStatus, shiftRules } = useAttendance();
+  const navigate = useNavigate();
   const [viewShift, setViewShift] = useState('All');
   
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const filteredPeople = people.filter(p => viewShift === 'All' || p.shift === viewShift);
-
-  const handleAddReason = (e) => {
-    e.preventDefault();
-    addAbsenceReason(selectedPerson.id, today, reason);
-    setReason('');
-    setSelectedPerson(null);
-  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -62,20 +53,20 @@ const Attendance = () => {
         </div>
         <div className="current-rules">
           <Clock size={16} />
-          <span>Scanning ends at: <strong>{shiftRules.Morning.scanEnd} (M)</strong> / <strong>{shiftRules.Afternoon.scanEnd} (A)</strong></span>
+          <span>Shifts: <strong>{shiftRules.Morning.scan_start} (M)</strong> / <strong>{shiftRules.Afternoon.scan_start} (A)</strong></span>
         </div>
       </div>
 
       <div className="attendance-grid">
         {filteredPeople.map(person => {
           const status = checkAttendanceStatus(person.id, today);
-          const log = attendanceLogs.find(l => l.personId === person.id && l.date === today);
+          const log = attendanceLogs.find(l => l.person_id === person.id && l.date === today);
           
           return (
             <div 
               key={person.id} 
               className={`attendance-card card hoverable ${status === 'Missing' ? 'border-danger' : ''}`}
-              onClick={() => setSelectedPerson(person)}
+              onClick={() => navigate(`/worker/${person.id}/history`)}
             >
               <div className="card-top">
                 <div className="person-brief">
@@ -99,25 +90,25 @@ const Attendance = () => {
               </div>
 
               <div className="card-details">
-                {status === 'Attended' ? (
+                {status === 'Attended' || log ? (
                   <div className="time-info">
                     <div className="time-block">
                       <span>Check-In</span>
-                      <strong>{log.check_in || '--:--'}</strong>
+                      <strong>{log?.check_in || '--:--'}</strong>
                     </div>
                     <div className="time-block">
                       <span>Check-Out</span>
-                      <strong>{log.check_out || '--:--'}</strong>
+                      <strong>{log?.check_out || '--:--'}</strong>
                     </div>
                   </div>
                 ) : status === 'Missing' ? (
                   <div className="missing-action">
-                    <p className="danger-text">System flagged: Non-attendance</p>
-                    <button className="add-reason-btn">View History / Excuse</button>
+                    <p className="danger-text">Directly flagged</p>
+                    <button className="add-reason-btn">Full Profile & History</button>
                   </div>
                 ) : (
                   <div className="reasoned-info">
-                    <p>Reason provided and approved by admin.</p>
+                    <p>Reason provided (See History)</p>
                   </div>
                 )}
               </div>
@@ -125,75 +116,6 @@ const Attendance = () => {
           );
         })}
       </div>
-
-      {selectedPerson && (
-        <div className="modal-overlay">
-          <div className="modal card animate-fade-in large-modal">
-            <div className="modal-header">
-              <div className="person-header">
-                <div className="person-avatar">{selectedPerson.name.charAt(0)}</div>
-                <div className="name-meta">
-                  <h3>{selectedPerson.name}</h3>
-                  <span className="shift-meta">{selectedPerson.shift} Shift | ID: {selectedPerson.member_id}</span>
-                </div>
-              </div>
-              <button className="close-btn" onClick={() => setSelectedPerson(null)}>×</button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="history-filters">
-                <h4>Full Attendance History</h4>
-              </div>
-              
-              <div className="history-table-wrapper">
-                <table className="history-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Check-In</th>
-                      <th>Check-Out</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attendanceLogs
-                      .filter(l => l.person_id === selectedPerson.id)
-                      .sort((a, b) => new Date(b.date) - new Date(a.date))
-                      .map((log) => (
-                        <tr key={log.id}>
-                          <td>{format(new Date(log.date), 'MMM d, yyyy')}</td>
-                          <td>{log.check_in || '--:--'}</td>
-                          <td>{log.check_out || '--:--'}</td>
-                          <td>
-                             <span className={`status-pill ${log.status?.toLowerCase()}`}>
-                                {log.status || 'Attended'}
-                             </span>
-                          </td>
-                        </tr>
-                      ))}
-                    {attendanceLogs.filter(l => l.person_id === selectedPerson.id).length === 0 && (
-                      <tr><td colSpan="4" className="no-history">No history found for this worker.</td></tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="absence-section">
-                <h4>Manage Reasons for Absence (Today)</h4>
-                <form onSubmit={handleAddReason} className="modal-form inline-form">
-                  <input 
-                    type="text" 
-                    placeholder="Enter reason for absence today..." 
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                  />
-                  <button type="submit" className="primary-btn">Excuse Absence</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

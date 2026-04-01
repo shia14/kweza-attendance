@@ -7,8 +7,8 @@ import Attendance from './pages/Attendance';
 import Shifts from './pages/Shifts';
 import History from './pages/History';
 import Login from './pages/Login';
-import Security from './pages/Security';
 import Activity from './pages/Activity';
+import WorkerHistory from './pages/WorkerHistory';
 import { AttendanceProvider } from './context/AttendanceContext';
 import './App.css';
 
@@ -40,6 +40,7 @@ function App() {
               <Route path="/people" element={<People />} />
               <Route path="/attendance" element={<Attendance />} />
               <Route path="/activity" element={<Activity />} />
+              <Route path="/worker/:id/history" element={<WorkerHistory />} />
               <Route path="/shifts" element={<Shifts />} />
               <Route path="/history" element={<History />} />
               <Route path="/security" element={<Security />} />
