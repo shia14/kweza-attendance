@@ -37,3 +37,21 @@ export async function POST(request) {
     return handleServerError(err);
   }
 }
+
+export async function DELETE(request) {
+  try {
+    await initDb();
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return jsonResponse({ success: false, message: 'Missing ID' }, 400);
+
+    // Delete attendance logs and reasons first to maintain integrity
+    await pool.query('DELETE FROM attendance_logs WHERE person_id = $1', [id]);
+    await pool.query('DELETE FROM absence_reasons WHERE person_id = $1', [id]);
+    await pool.query('DELETE FROM people WHERE id = $1', [id]);
+    
+    return jsonResponse({ success: true });
+  } catch (err) {
+    return handleServerError(err);
+  }
+}

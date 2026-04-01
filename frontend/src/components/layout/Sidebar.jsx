@@ -26,11 +26,6 @@ const Sidebar = ({ onLogout }) => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-logo">
-        <img src="/KWEZA FINANCIAL SOLUTIONS MAIN LOGO.png" alt="Kweza Logo" className="sidebar-brand-img" />
-        <span className="system-tag">Attendance Admin</span>
-      </div>
-
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <NavLink 

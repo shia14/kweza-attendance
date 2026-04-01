@@ -60,6 +60,15 @@ export const AttendanceProvider = ({ children }) => {
     setPeople([...people, newPerson]);
   };
 
+  const deletePerson = async (id) => {
+    const res = await fetch(`${API_BASE}/api/people?id=${id}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      setPeople(people.filter(p => p.id !== id));
+    }
+  };
+
   const updateShiftRules = async (rules) => {
     const res = await fetch(`${API_BASE}/api/shifts`, {
       method: 'PUT',
@@ -95,6 +104,7 @@ export const AttendanceProvider = ({ children }) => {
     <AttendanceContext.Provider value={{
       people,
       addPerson,
+      deletePerson,
       attendanceLogs,
       absenceReasons,
       addAbsenceReason,

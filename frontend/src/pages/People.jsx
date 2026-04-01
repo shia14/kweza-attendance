@@ -4,7 +4,7 @@ import { useAttendance } from '../context/AttendanceContext';
 import './People.css';
 
 const People = () => {
-  const { people, addPerson } = useAttendance();
+  const { people, addPerson, deletePerson } = useAttendance();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPerson, setNewPerson] = useState({ name: '', shift: 'Morning', mobile: '', status: 'Active', memberId: '', pin: '' });
@@ -13,6 +13,12 @@ const People = () => {
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (p.member_id && p.member_id.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+      deletePerson(id);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -86,7 +92,12 @@ const People = () => {
                 </td>
                 <td className="actions">
                   <button className="icon-btn edit"><Edit2 size={16} /></button>
-                  <button className="icon-btn delete"><Trash2 size={16} /></button>
+                  <button 
+                    className="icon-btn delete" 
+                    onClick={() => handleDelete(person.id, person.name)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
