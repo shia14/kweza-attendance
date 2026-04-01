@@ -8,26 +8,32 @@ const Scanner = ({ onScan, onCancel }) => {
     const html5QrCode = new Html5Qrcode("qr-reader");
     scannerRef.current = html5QrCode;
 
-    const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+    const qrConfig = { 
+      fps: 20, 
+      formatsToSupport: [0], // 0 is QR_CODE
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+    };
 
     html5QrCode.start(
       { facingMode: "environment" }, 
       qrConfig,
       (decodedText) => {
-        // Success
+        // Success - Stop and notify immediately
         html5QrCode.stop().then(() => {
           onScan(decodedText);
-        }).catch(err => {
-          console.error("Stop failed", err);
+        }).catch(() => {
           onScan(decodedText);
         });
       },
-      (errorMessage) => {
-        // failure, usually ignored
-      }
+      () => {} // error handler ignored
     ).catch(err => {
-      console.error("Unable to start scanning", err);
-      alert("Camera error: Please ensure you have granted camera permissions.");
+      const errStr = String(err);
+      if (errStr.includes("NotAllowedError") || errStr.includes("Permission denied")) {
+        alert("Camera Permission Denied: Please go to your browser settings and allow camera access for this site.");
+      } else {
+        alert("Scan Error: Could not initialize camera. (Check if another app is using it)");
+      }
+      onCancel();
     });
 
     return () => {

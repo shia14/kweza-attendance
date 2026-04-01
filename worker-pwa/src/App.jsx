@@ -44,8 +44,9 @@ function App() {
   };
 
   const processScan = async (decodedText) => {
-    if (decodedText !== QR_VALUE) {
-      alert('Invalid QR code scanned');
+    const trimmed = (decodedText || '').trim();
+    if (trimmed !== QR_VALUE) {
+      alert(`Access Denied: This QR code is not valid for Kweza Attendance. (Value: ${trimmed})`);
       setScanning(false);
       return;
     }
