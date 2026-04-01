@@ -10,8 +10,7 @@ const Shifts = () => {
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    updateShiftRules('Morning', morning);
-    updateShiftRules('Afternoon', afternoon);
+    updateShiftRules({ Morning: morning, Afternoon: afternoon });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -34,8 +33,8 @@ const Shifts = () => {
               <label>Scan Window Starts</label>
               <input 
                 type="time" 
-                value={morning.scanStart}
-                onChange={(e) => setMorning({...morning, scanStart: e.target.value})}
+                value={morning.scan_start}
+                onChange={(e) => setMorning({...morning, scan_start: e.target.value})}
               />
               <span className="field-info">People can start scanning arrived from this time.</span>
             </div>
@@ -43,8 +42,8 @@ const Shifts = () => {
               <label>Late Threshold (Scan Ends)</label>
               <input 
                 type="time" 
-                value={morning.scanEnd}
-                onChange={(e) => setMorning({...morning, scanEnd: e.target.value})}
+                value={morning.scan_end}
+                onChange={(e) => setMorning({...morning, scan_end: e.target.value})}
               />
               <span className="field-info danger-text">If scan exceeds this time, it will be BLOCKED by the system.</span>
             </div>
@@ -52,8 +51,8 @@ const Shifts = () => {
               <label>Departure Window Ends</label>
               <input 
                 type="time" 
-                value={morning.departureEnd}
-                onChange={(e) => setMorning({...morning, departureEnd: e.target.value})}
+                value={morning.departure_end}
+                onChange={(e) => setMorning({...morning, departure_end: e.target.value})}
               />
               <span className="field-info">Deadline for recording departure scan.</span>
             </div>
@@ -70,24 +69,24 @@ const Shifts = () => {
               <label>Scan Window Starts</label>
               <input 
                 type="time" 
-                value={afternoon.scanStart}
-                onChange={(e) => setAfternoon({...afternoon, scanStart: e.target.value})}
+                value={afternoon.scan_start}
+                onChange={(e) => setAfternoon({...afternoon, scan_start: e.target.value})}
               />
             </div>
             <div className="form-group border-danger-soft">
               <label>Late Threshold (Scan Ends)</label>
               <input 
                 type="time" 
-                value={afternoon.scanEnd}
-                onChange={(e) => setAfternoon({...afternoon, scanEnd: e.target.value})}
+                value={afternoon.scan_end}
+                onChange={(e) => setAfternoon({...afternoon, scan_end: e.target.value})}
               />
             </div>
             <div className="form-group">
               <label>Departure Window Ends</label>
               <input 
                 type="time" 
-                value={afternoon.departureEnd}
-                onChange={(e) => setAfternoon({...afternoon, departureEnd: e.target.value})}
+                value={afternoon.departure_end}
+                onChange={(e) => setAfternoon({...afternoon, departure_end: e.target.value})}
               />
             </div>
           </div>

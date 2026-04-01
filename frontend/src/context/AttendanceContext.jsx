@@ -23,25 +23,24 @@ export const AttendanceProvider = ({ children }) => {
 
   const fetchData = async () => {
     try {
-      const [pRes, aRes, rRes, sRes, acRes] = await Promise.all([
-        fetch(`${API_BASE}/api/people`),
-        fetch(`${API_BASE}/api/attendance`),
-        fetch(`${API_BASE}/api/reasons`),
-        fetch(`${API_BASE}/api/shifts`),
-        fetch(`${API_BASE}/api/activity`)
-      ]);
+      const endpoints = ['people', 'attendance', 'reasons', 'shifts', 'activity'];
+      const responses = await Promise.all(
+        endpoints.map(ep => fetch(`${API_BASE}/api/${ep}`).catch(e => ({ json: () => [], ok: false })))
+      );
 
-      const [pData, aData, rData, sData, acData] = await Promise.all([
-        pRes.json(), aRes.json(), rRes.json(), sRes.json(), acRes.json()
-      ]);
+      const [pData, aData, rData, sData, acData] = await Promise.all(
+        responses.map(res => (res.ok ? res.json().catch(() => []) : []))
+      );
 
-      setPeople(pData);
-      setAttendanceLogs(aData);
-      setAbsenceReasons(rData);
-      setScanActivity(acData);
-      if (Object.keys(sData).length > 0) setShiftRules(sData);
+      setPeople(Array.isArray(pData) ? pData : []);
+      setAttendanceLogs(Array.isArray(aData) ? aData : []);
+      setAbsenceReasons(Array.isArray(rData) ? rData : []);
+      setScanActivity(Array.isArray(acData) ? acData : []);
+      if (sData && !Array.isArray(sData) && Object.keys(sData).length > 0) {
+        setShiftRules(sData);
+      }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      console.error('Critical failed to fetch data:', err);
     } finally {
       setLoading(false);
     }

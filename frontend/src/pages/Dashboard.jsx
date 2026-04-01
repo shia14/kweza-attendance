@@ -21,13 +21,14 @@ import { useAttendance } from '../context/AttendanceContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { people, attendanceLogs, absenceReasons } = useAttendance();
+  const { people, attendanceLogs, scanActivity } = useAttendance();
+  const today = new Date().toISOString().split('T')[0];
 
   const stats = [
     { title: 'Total Workers', value: people.length, icon: <Users />, color: '#007BA7' },
     { title: 'Morning Shift', value: people.filter(p => p.shift === 'Morning').length, icon: <Clock />, color: '#87CEEB' },
     { title: 'Afternoon Shift', value: people.filter(p => p.shift === 'Afternoon').length, icon: <Briefcase />, color: '#005f82' },
-    { title: 'Today Attended', value: attendanceLogs.filter(l => l.date === '2026-03-26').length, icon: <CheckCircle />, color: '#10b981' },
+    { title: 'Today Attended', value: attendanceLogs.filter(l => l.date === today).length, icon: <CheckCircle />, color: '#10b981' },
   ];
 
   const chartData = [
