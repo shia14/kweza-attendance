@@ -7,6 +7,7 @@ import Attendance from './pages/Attendance';
 import Shifts from './pages/Shifts';
 import History from './pages/History';
 import Login from './pages/Login';
+import Security from './pages/Security';
 import Activity from './pages/Activity';
 import WorkerHistory from './pages/WorkerHistory';
 import { AttendanceProvider } from './context/AttendanceContext';
