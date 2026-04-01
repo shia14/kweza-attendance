@@ -90,27 +90,16 @@ const Dashboard = () => {
             <button className="text-btn">View All</button>
           </div>
           <div className="activity-list">
-            <div className="activity-item">
-              <span className="activity-dot check"></span>
-              <div className="activity-info">
-                <p><strong>John Doe</strong> checked in for Morning Shift</p>
-                <span>7:30 AM</span>
+            {scanActivity.slice(0, 5).map((activity) => (
+              <div key={activity.id} className="activity-item">
+                <span className={`activity-dot ${activity.scan_type === 'arrival' ? 'check' : 'info'}`}></span>
+                <div className="activity-info">
+                  <p><strong>{activity.name}</strong> scanned for {activity.scan_type}</p>
+                  <span>{new Date(activity.scanned_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
               </div>
-            </div>
-            <div className="activity-item">
-              <span className="activity-dot alert"></span>
-              <div className="activity-info">
-                <p><strong>Jane Smith</strong> is marked absent (Sick Leave)</p>
-                <span>8:45 AM</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <span className="activity-dot info"></span>
-              <div className="activity-info">
-                <p>Updated scan time rules for Saturday</p>
-                <span>Yesterday</span>
-              </div>
-            </div>
+            ))}
+            {scanActivity.length === 0 && <p className="no-data">No recent activity</p>}
           </div>
         </div>
       </div>

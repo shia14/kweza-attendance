@@ -195,3 +195,109 @@ textarea {
   font-family: inherit;
   resize: none;
 }
+
+.attendance-card.hoverable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.attendance-card.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.large-modal {
+  max-width: 800px;
+  width: 95%;
+  padding: 0 !important;
+}
+
+.person-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+
+.modal-body {
+  padding: 1.5rem 2rem 2.5rem;
+}
+
+.history-table-wrapper {
+  margin: 1.5rem 0;
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.history-table th {
+  background: #f8fafc;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  position: sticky;
+  top: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.status-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-pill.attended { background: #dcfce7; color: #15803d; }
+.status-pill.late { background: #fef3c7; color: #92400e; }
+.status-pill.missing { background: #fee2e2; color: #ef4444; }
+
+.absence-section {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+}
+
+.absence-section h4 {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.inline-form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.inline-form input {
+  flex: 1;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.no-history {
+  padding: 3rem !important;
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+}
+

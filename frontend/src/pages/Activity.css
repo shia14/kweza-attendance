@@ -1,0 +1,102 @@
+.activity-page {
+  padding: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.activity-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-item {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.feed-item:hover {
+  background: var(--bg-sub);
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.feed-icon-wrapper {
+  margin-top: 0.25rem;
+}
+
+.feed-icon-check {
+  color: #10b981;
+}
+
+.feed-icon-info {
+  color: #007BA7;
+}
+
+.feed-content {
+  flex: 1;
+}
+
+.feed-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.feed-main h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.feed-id {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  background: #f1f5f9;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.feed-content p {
+  color: #4b5563;
+  margin-bottom: 0.6rem;
+}
+
+.feed-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-link);
+}
+
+.feed-meta .dot {
+  color: #d1d5db;
+}
+
+.qr-ref {
+  opacity: 0.7;
+}
+
+.no-activity {
+  padding: 5rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.no-activity svg {
+  margin-bottom: 1rem;
+  opacity: 0.2;
+}

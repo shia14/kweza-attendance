@@ -8,7 +8,8 @@ import {
   LayoutDashboard, 
   LogOut,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Activity
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -18,6 +19,7 @@ const Sidebar = ({ onLogout }) => {
     { name: 'Manage People', icon: <Users size={20} />, path: '/people' },
     { name: 'Attendance', icon: <Calendar size={20} />, path: '/attendance' },
     { name: 'Shift Rules', icon: <Clock size={20} />, path: '/shifts' },
+    { name: 'Recent Activity', icon: <Activity size={20} />, path: '/activity' },
     { name: 'History', icon: <History size={20} />, path: '/history' },
     { name: 'Security', icon: <ShieldCheck size={20} />, path: '/security' },
   ];

@@ -72,7 +72,11 @@ const Attendance = () => {
           const log = attendanceLogs.find(l => l.personId === person.id && l.date === today);
           
           return (
-            <div key={person.id} className={`attendance-card card ${status === 'Missing' ? 'border-danger' : ''}`}>
+            <div 
+              key={person.id} 
+              className={`attendance-card card hoverable ${status === 'Missing' ? 'border-danger' : ''}`}
+              onClick={() => setSelectedPerson(person)}
+            >
               <div className="card-top">
                 <div className="person-brief">
                   <div className="person-avatar">{person.name.charAt(0)}</div>
@@ -89,7 +93,7 @@ const Attendance = () => {
                       .replace(/[^a-z0-9]+/g, '-')
                       .replace(/(^-|-$)/g, '')}`}
                   >
-                    {status}
+                    {log?.status || status}
                   </span>
                 </div>
               </div>
@@ -99,22 +103,17 @@ const Attendance = () => {
                   <div className="time-info">
                     <div className="time-block">
                       <span>Check-In</span>
-                      <strong>{log.checkIn}</strong>
+                      <strong>{log.check_in || '--:--'}</strong>
                     </div>
                     <div className="time-block">
                       <span>Check-Out</span>
-                      <strong>{log.checkOut || '--:--'}</strong>
+                      <strong>{log.check_out || '--:--'}</strong>
                     </div>
                   </div>
                 ) : status === 'Missing' ? (
                   <div className="missing-action">
                     <p className="danger-text">System flagged: Non-attendance</p>
-                    <button 
-                      className="add-reason-btn"
-                      onClick={() => setSelectedPerson(person)}
-                    >
-                      Add Reason
-                    </button>
+                    <button className="add-reason-btn">View History / Excuse</button>
                   </div>
                 ) : (
                   <div className="reasoned-info">
@@ -129,23 +128,69 @@ const Attendance = () => {
 
       {selectedPerson && (
         <div className="modal-overlay">
-          <div className="modal card animate-fade-in">
+          <div className="modal card animate-fade-in large-modal">
             <div className="modal-header">
-              <h3>Excused Absence: {selectedPerson.name}</h3>
+              <div className="person-header">
+                <div className="person-avatar">{selectedPerson.name.charAt(0)}</div>
+                <div className="name-meta">
+                  <h3>{selectedPerson.name}</h3>
+                  <span className="shift-meta">{selectedPerson.shift} Shift | ID: {selectedPerson.member_id}</span>
+                </div>
+              </div>
               <button className="close-btn" onClick={() => setSelectedPerson(null)}>×</button>
             </div>
-            <form onSubmit={handleAddReason} className="modal-form">
-              <div className="form-group">
-                <label>Reason for Absence</label>
-                <textarea 
-                  rows="4"
-                  placeholder="e.g. Health emergency, Authorized leave... (Optional)"
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                ></textarea>
+            
+            <div className="modal-body">
+              <div className="history-filters">
+                <h4>Full Attendance History</h4>
               </div>
-              <button type="submit" className="primary-btn submit-btn">Mark as Excused</button>
-            </form>
+              
+              <div className="history-table-wrapper">
+                <table className="history-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Check-In</th>
+                      <th>Check-Out</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceLogs
+                      .filter(l => l.person_id === selectedPerson.id)
+                      .sort((a, b) => new Date(b.date) - new Date(a.date))
+                      .map((log) => (
+                        <tr key={log.id}>
+                          <td>{format(new Date(log.date), 'MMM d, yyyy')}</td>
+                          <td>{log.check_in || '--:--'}</td>
+                          <td>{log.check_out || '--:--'}</td>
+                          <td>
+                             <span className={`status-pill ${log.status?.toLowerCase()}`}>
+                                {log.status || 'Attended'}
+                             </span>
+                          </td>
+                        </tr>
+                      ))}
+                    {attendanceLogs.filter(l => l.person_id === selectedPerson.id).length === 0 && (
+                      <tr><td colSpan="4" className="no-history">No history found for this worker.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="absence-section">
+                <h4>Manage Reasons for Absence (Today)</h4>
+                <form onSubmit={handleAddReason} className="modal-form inline-form">
+                  <input 
+                    type="text" 
+                    placeholder="Enter reason for absence today..." 
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                  />
+                  <button type="submit" className="primary-btn">Excuse Absence</button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       )}

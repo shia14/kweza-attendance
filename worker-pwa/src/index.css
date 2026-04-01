@@ -1,0 +1,54 @@
+:root {
+  --primary: #2A52BE;
+  --secondary: #007BA7;
+  --background: #FFFFFF;
+  --card-bg: #EDF2F7;
+  --text-main: #00263E;
+  --text-sub: #4A5568;
+  --border: #E2E8F0;
+  --error: #E53E3E;
+  --success: #10B981;
+  --radius-lg: 24px;
+  --radius-md: 14px;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--background);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+input {
+  outline: none;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

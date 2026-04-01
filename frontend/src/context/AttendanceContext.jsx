@@ -19,22 +19,26 @@ export const AttendanceProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
+  const [scanActivity, setScanActivity] = useState([]);
+
   const fetchData = async () => {
     try {
-      const [pRes, aRes, rRes, sRes] = await Promise.all([
+      const [pRes, aRes, rRes, sRes, acRes] = await Promise.all([
         fetch(`${API_BASE}/api/people`),
         fetch(`${API_BASE}/api/attendance`),
         fetch(`${API_BASE}/api/reasons`),
-        fetch(`${API_BASE}/api/shifts`)
+        fetch(`${API_BASE}/api/shifts`),
+        fetch(`${API_BASE}/api/activity`)
       ]);
 
-      const [pData, aData, rData, sData] = await Promise.all([
-        pRes.json(), aRes.json(), rRes.json(), sRes.json()
+      const [pData, aData, rData, sData, acData] = await Promise.all([
+        pRes.json(), aRes.json(), rRes.json(), sRes.json(), acRes.json()
       ]);
 
       setPeople(pData);
       setAttendanceLogs(aData);
       setAbsenceReasons(rData);
+      setScanActivity(acData);
       if (Object.keys(sData).length > 0) setShiftRules(sData);
     } catch (err) {
       console.error('Failed to fetch data:', err);
@@ -98,6 +102,7 @@ export const AttendanceProvider = ({ children }) => {
       shiftRules,
       updateShiftRules,
       checkAttendanceStatus,
+      scanActivity,
       loading,
       refreshData: fetchData
     }}>
