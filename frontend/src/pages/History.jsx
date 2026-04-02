@@ -173,13 +173,14 @@ const History = () => {
                   {filteredLogs.length > 0 ? (
                     filteredLogs.map(date => {
                       const status = checkAttendanceStatus(selectedPersonId, date);
-                      const log = attendanceLogs.find(l => l.personId === selectedPersonId && l.date === date);
+                      const log = attendanceLogs.find(l => l.person_id === selectedPersonId && l.date === date);
                       return (
                         <tr key={date} className="table-row">
-                          <td>{format(new Date(date), 'MMM dd, yyyy')}</td>
-                          <td>{format(new Date(date), 'EEEE')}</td>
-                          <td>{log ? log.checkIn : '--:--'}</td>
-                          <td>{log ? (log.checkOut || '--:--') : '--:--'}</td>
+                          <td>{new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Africa/Johannesburg' })}</td>
+                          <td>{new Date(date).toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Africa/Johannesburg' })}</td>
+                          <td>{log?.check_in || '--:--'}</td>
+                          <td>{log?.check_out || '--:--'}</td>
+
                           <td>
                             <span className={`status-badge ${status.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '')}`}>
                               {status}

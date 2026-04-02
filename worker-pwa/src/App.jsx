@@ -64,7 +64,11 @@ function App() {
       });
       const result = await response.json();
       if (result.success) {
-        const time = new Date(result.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // Correct time formatting for the result display
+        const time = new Date(result.scannedAt).toLocaleTimeString('en-GB', { 
+            hour: '2-digit', minute: '2-digit', 
+            timeZone: 'Africa/Johannesburg' 
+        });
         if (result.scanType === 'arrival') {
           setArrival({ time });
         } else {
@@ -410,7 +414,7 @@ function App() {
               animation: spin 1s infinite linear;
           }
           @keyframes spin { to { transform: rotate(360deg); } }
-       `}</style>
+        `}</style>
     </main>
   );
 }

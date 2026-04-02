@@ -10,7 +10,7 @@ export function OPTIONS() {
 export async function POST(request) {
   try {
     await initDb();
-    const { name, idNumber, qrValue } = await getJson(request);
+    const { name, idNumber, qrValue, scanType: requestedScanType } = await getJson(request);
 
     if (!idNumber || !qrValue) {
       return jsonResponse({ success: false, message: 'Missing scan data' }, 400);
@@ -27,22 +27,31 @@ export async function POST(request) {
     }
     const person = personResult.rows[0];
 
-    // Determine scan type
-    const today = new Date().toISOString().split('T')[0];
-    const lastScanResult = await pool.query(
-      `SELECT scan_type FROM scan_events 
-       WHERE id_number = $1 AND DATE(scanned_at) = $2 
-       ORDER BY scanned_at DESC LIMIT 1`,
-      [idNumber, today]
-    );
-
-    let scanType = 'arrival';
-    if (lastScanResult.rows.length > 0 && lastScanResult.rows[0].scan_type === 'arrival') {
-      scanType = 'departure';
+    // Explicit scan type from request, or fallback to database toggle if not provided (for backward compatibility)
+    let scanType = requestedScanType;
+    
+    if (!scanType) {
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' }); // ISO-like date in target TZ
+      const lastScanResult = await pool.query(
+        `SELECT scan_type FROM scan_events 
+         WHERE id_number = $1 AND DATE(scanned_at AT TIME ZONE 'UTC' AT TIME ZONE 'Africa/Johannesburg') = $2 
+         ORDER BY scanned_at DESC LIMIT 1`,
+        [idNumber, today]
+      );
+      scanType = (lastScanResult.rows.length > 0 && lastScanResult.rows[0].scan_type === 'arrival') ? 'departure' : 'arrival';
     }
 
     const scannedAt = new Date().toISOString();
-    const timeStr = new Date(scannedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+    // Use Africa/Johannesburg (GMT+2) for consistent local time recording
+    const timeStr = new Date(scannedAt).toLocaleTimeString('en-GB', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false,
+      timeZone: 'Africa/Johannesburg'
+    });
+    
+    // Also need the correct 'today' date for the target timezone
+    const today = new Date(scannedAt).toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
 
     // Save to scan_events
     await pool.query(

@@ -101,9 +101,9 @@ app.post('/api/worker/login', (req, res) => {
 
 // --- Scan Routes ---
 app.post('/api/scan', (req, res) => {
-  const { name, idNumber, qrValue } = req.body || {};
+  const { name, idNumber, qrValue, scanType: requestedScanType } = req.body || {};
 
-  if (!name || !idNumber || !qrValue) {
+  if (!idNumber || !qrValue) {
     return res.status(400).json({ success: false, message: 'Missing scan data' });
   }
 
@@ -111,28 +111,39 @@ app.post('/api/scan', (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid QR code' });
   }
 
-  // Find worker to see their last scan today
+  // Find worker
   const worker = db.prepare('SELECT * FROM people WHERE member_id = ?').get(idNumber);
   if (!worker) {
     return res.status(404).json({ success: false, message: 'Worker not found' });
   }
 
-  const today = new Date().toISOString().split('T')[0];
-  const lastScan = db.prepare(
-    'SELECT * FROM scan_events WHERE id_number = ? AND DATE(scanned_at) = ? ORDER BY scanned_at DESC LIMIT 1'
-  ).get(idNumber, today);
+  const now = new Date();
+  
+  // Use Africa/Johannesburg (GMT+2) for consistent local time
+  const scannedAt = now.toISOString();
+  // For local time comparison in SQLite/JS, get the ISO-like date in target TZ
+  const today = now.toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
+  const timeStr = now.toLocaleTimeString('en-GB', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: false,
+    timeZone: 'Africa/Johannesburg' 
+  });
 
-  let scanType = 'arrival';
-  if (lastScan && lastScan.scan_type === 'arrival') {
-    scanType = 'departure';
+  // Explicit type or fallback to toggle
+  let scanType = requestedScanType;
+  if (!scanType) {
+    const lastScan = db.prepare(
+        'SELECT * FROM scan_events WHERE id_number = ? AND DATE(scanned_at) = ? ORDER BY scanned_at DESC LIMIT 1'
+    ).get(idNumber, today);
+    scanType = (lastScan && lastScan.scan_type === 'arrival') ? 'departure' : 'arrival';
   }
 
-  const scannedAt = new Date().toISOString();
   db.prepare(
     'INSERT INTO scan_events (name, id_number, scan_type, qr_value, scanned_at) VALUES (?, ?, ?, ?, ?)'
   ).run(name, idNumber, scanType, qrValue, scannedAt);
 
-  res.json({ success: true, scanType, scannedAt });
+  res.json({ success: true, scanType, scannedAt, timeStr });
 });
 
 app.listen(PORT, () => {

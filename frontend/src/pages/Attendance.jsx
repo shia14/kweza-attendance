@@ -16,7 +16,7 @@ const Attendance = () => {
   const navigate = useNavigate();
   const [viewShift, setViewShift] = useState('All');
   
-  const today = format(new Date(), 'yyyy-MM-dd');
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
 
   const filteredPeople = people.filter(p => viewShift === 'All' || p.shift === viewShift);
 

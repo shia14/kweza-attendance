@@ -31,7 +31,14 @@ const Activity = () => {
                 <p>Recorded an <strong>{activity.scan_type}</strong> scan via PWA.</p>
                 <div className="feed-meta">
                   <Clock size={14} />
-                  <span>{format(new Date(activity.scanned_at), 'MMM d, h:mm a')}</span>
+                  <span>{new Date(activity.scanned_at).toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute: '2-digit', 
+                    hour12: true, 
+                    timeZone: 'Africa/Johannesburg' 
+                  })}</span>
                   <span className="dot">·</span>
                   <span className="qr-ref">QR: {activity.qr_value}</span>
                 </div>
