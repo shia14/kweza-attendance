@@ -69,6 +69,20 @@ export const AttendanceProvider = ({ children }) => {
     }
   };
 
+  const updatePerson = async (id, updates) => {
+    const res = await fetch(`${API_BASE}/api/people?id=${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setPeople(people.map(p => p.id === id ? updated : p));
+      return { success: true };
+    }
+    return { success: false };
+  };
+
   const updateShiftRules = async (rules) => {
     const res = await fetch(`${API_BASE}/api/shifts`, {
       method: 'PUT',
@@ -105,6 +119,7 @@ export const AttendanceProvider = ({ children }) => {
       people,
       addPerson,
       deletePerson,
+      updatePerson,
       attendanceLogs,
       absenceReasons,
       addAbsenceReason,

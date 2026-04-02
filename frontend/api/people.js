@@ -38,6 +38,33 @@ export async function POST(request) {
   }
 }
 
+export async function PUT(request) {
+  try {
+    await initDb();
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return jsonResponse({ success: false, message: 'Missing ID' }, 400);
+
+    const { name, shift, mobile, pin } = await getJson(request);
+    if (!name || !shift) {
+      return jsonResponse({ success: false, message: 'Missing name or shift' }, 400);
+    }
+
+    const result = await pool.query(
+      `UPDATE people SET name=$1, shift=$2, mobile=$3, pin=COALESCE(NULLIF($4,''), pin)
+       WHERE id=$5 RETURNING *`,
+      [name, shift, mobile || null, pin || null, id]
+    );
+
+    if (result.rows.length === 0) {
+      return jsonResponse({ success: false, message: 'Person not found' }, 404);
+    }
+    return jsonResponse(result.rows[0]);
+  } catch (err) {
+    return handleServerError(err);
+  }
+}
+
 export async function DELETE(request) {
   try {
     await initDb();
