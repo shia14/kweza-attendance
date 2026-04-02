@@ -1,8 +1,6 @@
 import { initDb, pool } from './_db.js';
 import { emptyResponse, getJson, handleServerError, jsonResponse } from './_shared.js';
 
-const QR_VALUE = process.env.QR_VALUE || 'KWEZA-ATTENDANCE-CHECKIN';
-
 export function OPTIONS() {
   return emptyResponse();
 }
@@ -10,7 +8,7 @@ export function OPTIONS() {
 export async function POST(request) {
   try {
     await initDb();
-    const { name, idNumber, qrValue, scanType: requestedScanType } = await getJson(request);
+    const { name, idNumber, qrValue } = await getJson(request);
 
     if (!idNumber || !qrValue) {
       return jsonResponse({ success: false, message: 'Missing scan data' }, 400);
@@ -27,31 +25,30 @@ export async function POST(request) {
     }
     const person = personResult.rows[0];
 
-    // Explicit scan type from request, or fallback to database toggle if not provided (for backward compatibility)
-    let scanType = requestedScanType;
-    
-    if (!scanType) {
-      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' }); // ISO-like date in target TZ
-      const lastScanResult = await pool.query(
-        `SELECT scan_type FROM scan_events 
-         WHERE id_number = $1 AND DATE(scanned_at AT TIME ZONE 'UTC' AT TIME ZONE 'Africa/Johannesburg') = $2 
-         ORDER BY scanned_at DESC LIMIT 1`,
-        [idNumber, today]
-      );
-      scanType = (lastScanResult.rows.length > 0 && lastScanResult.rows[0].scan_type === 'arrival') ? 'departure' : 'arrival';
-    }
-
     const scannedAt = new Date().toISOString();
-    // Use Africa/Johannesburg (GMT+2) for consistent local time recording
-    const timeStr = new Date(scannedAt).toLocaleTimeString('en-GB', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
+
+    // Use Africa/Johannesburg (GMT+2) for all time calculations
+    const todayDate = new Date(scannedAt).toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
+    const timeStr = new Date(scannedAt).toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
       timeZone: 'Africa/Johannesburg'
     });
-    
-    // Also need the correct 'today' date for the target timezone
-    const today = new Date(scannedAt).toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
+
+    // Check last scan today to determine arrival vs departure
+    const lastScanResult = await pool.query(
+      `SELECT scan_type FROM scan_events
+       WHERE id_number = $1
+       AND DATE(scanned_at AT TIME ZONE 'Africa/Johannesburg') = $2
+       ORDER BY scanned_at DESC LIMIT 1`,
+      [idNumber, todayDate]
+    );
+
+    // First scan of the day = arrival. Second scan = departure.
+    const scanType = (lastScanResult.rows.length > 0 && lastScanResult.rows[0].scan_type === 'arrival')
+      ? 'departure'
+      : 'arrival';
 
     // Save to scan_events
     await pool.query(
@@ -62,37 +59,34 @@ export async function POST(request) {
 
     // Update attendance_logs
     if (scanType === 'arrival') {
-      // Check if late
+      // Determine if late based on shift rules
       const shiftRulesResult = await pool.query('SELECT * FROM shift_rules WHERE shift = $1', [person.shift]);
       const rules = shiftRulesResult.rows[0];
       let status = 'Attended';
-      
-      if (rules && rules.scan_start) {
-         if (timeStr > rules.scan_end) {
-            status = 'Late';
-         }
+      if (rules && rules.scan_end && timeStr > rules.scan_end) {
+        status = 'Late';
       }
 
-      await pool.query(
-        `INSERT INTO attendance_logs (person_id, date, check_in, status)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT DO NOTHING`, // Assuming unique constraint on (person_id, date) if added, or handle manually
-         [person.id, today, timeStr, status]
+      // Upsert: update if exists, insert if not
+      const existing = await pool.query(
+        'SELECT id FROM attendance_logs WHERE person_id = $1 AND date = $2',
+        [person.id, todayDate]
       );
-      
-      // Since no unique constraint yet, let's just update if exists
-      const existing = await pool.query('SELECT id FROM attendance_logs WHERE person_id = $1 AND date = $2', [person.id, today]);
       if (existing.rows.length > 0) {
-          await pool.query('UPDATE attendance_logs SET check_in = $1, status = $2 WHERE id = $3', [timeStr, status, existing.rows[0].id]);
+        await pool.query(
+          'UPDATE attendance_logs SET check_in = $1, status = $2 WHERE id = $3',
+          [timeStr, status, existing.rows[0].id]
+        );
       } else {
-          await pool.query('INSERT INTO attendance_logs (person_id, date, check_in, status) VALUES ($1, $2, $3, $4)', [person.id, today, timeStr, status]);
+        await pool.query(
+          'INSERT INTO attendance_logs (person_id, date, check_in, status) VALUES ($1, $2, $3, $4)',
+          [person.id, todayDate, timeStr, status]
+        );
       }
-
     } else {
       await pool.query(
-        `UPDATE attendance_logs SET check_out = $1 
-         WHERE person_id = $2 AND date = $3`,
-        [timeStr, person.id, today]
+        `UPDATE attendance_logs SET check_out = $1 WHERE person_id = $2 AND date = $3`,
+        [timeStr, person.id, todayDate]
       );
     }
 

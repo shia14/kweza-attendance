@@ -3,14 +3,21 @@ import { Html5Qrcode } from 'html5-qrcode';
 
 const Scanner = ({ onScan, onCancel }) => {
   const scannerRef = useRef(null);
+  const onScanRef = useRef(onScan);
+
+  // Keep ref up to date without triggering scanner restart
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
 
   useEffect(() => {
     const html5QrCode = new Html5Qrcode("qr-reader");
     scannerRef.current = html5QrCode;
 
     const qrConfig = { 
-      fps: 20, 
-      formatsToSupport: [0], // 0 is QR_CODE
+      fps: 30,
+      qrbox: { width: 250, height: 250 },
+      formatsToSupport: [0], // 0 is QR_CODE only — faster than scanning all formats
       experimentalFeatures: { useBarCodeDetectorIfSupported: true }
     };
 
@@ -18,14 +25,14 @@ const Scanner = ({ onScan, onCancel }) => {
       { facingMode: "environment" }, 
       qrConfig,
       (decodedText) => {
-        // Success - Stop and notify immediately
+        // Stop scanner immediately on success, then fire callback
         html5QrCode.stop().then(() => {
-          onScan(decodedText);
+          onScanRef.current(decodedText);
         }).catch(() => {
-          onScan(decodedText);
+          onScanRef.current(decodedText);
         });
       },
-      () => {} // error handler ignored
+      () => {} // suppress per-frame error noise
     ).catch(err => {
       const errStr = String(err);
       if (errStr.includes("NotAllowedError") || errStr.includes("Permission denied")) {
@@ -41,7 +48,7 @@ const Scanner = ({ onScan, onCancel }) => {
         scannerRef.current.stop().catch(err => console.error("Cleanup stop failed", err));
       }
     };
-  }, [onScan]);
+  }, []); // Empty deps — only initialize once
 
   return (
     <div className="scanner-modal animate-fade-in">
