@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kweza Scanner</string>
+    <string name="title_activity_main">Kweza Scanner</string>
+    <string name="package_name">com.kweza.scanner</string>
+    <string name="custom_url_scheme">com.kweza.scanner</string>
+</resources>
