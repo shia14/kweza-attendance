@@ -3,7 +3,17 @@ import { UserPlus, Search, Edit2, Trash2, Clock, X, Check, Loader } from 'lucide
 import { useAttendance } from '../context/AttendanceContext';
 import './People.css';
 
-const EMPTY_FORM = { name: '', shift: 'Morning', mobile: '', status: 'Active', memberId: '', pin: '' };
+const EMPTY_FORM = { 
+  name: '', 
+  shift: 'Morning', 
+  mobile: '', 
+  status: 'Active', 
+  memberId: '', 
+  pin: '',
+  workingDays: 'Mon,Tue,Wed,Thu,Fri,Sat'
+};
+
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const People = () => {
   const { people, addPerson, deletePerson, updatePerson } = useAttendance();
@@ -21,6 +31,15 @@ const People = () => {
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (p.member_id && p.member_id.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const toggleDay = (current, day) => {
+    const days = current.split(',').filter(d => d !== '');
+    if (days.includes(day)) {
+      return days.filter(d => d !== day).join(',');
+    } else {
+      return [...days, day].join(',');
+    }
+  };
 
   const handleDelete = (id, name) => {
     if (window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
@@ -42,6 +61,7 @@ const People = () => {
       shift:  person.shift,
       mobile: person.mobile || '',
       pin:    '', // Don't prefill PIN for security; blank = keep existing
+      workingDays: person.working_days || 'Mon,Tue,Wed,Thu,Fri,Sat'
     });
     setSaveError('');
   };
@@ -66,7 +86,7 @@ const People = () => {
         <div className="header-actions">
           <div>
             <h1>Manage People</h1>
-            <p>Add and manage workers in the system</p>
+            <p>Add and manage workers and their shift days</p>
           </div>
           <button className="primary-btn" onClick={() => setShowAddModal(true)}>
             <UserPlus size={18} />
@@ -75,6 +95,7 @@ const People = () => {
         </div>
       </header>
 
+      {/* ... previous table controls ... */}
       <div className="table-controls card">
         <div className="search-bar">
           <Search size={18} className="search-icon" />
@@ -85,11 +106,6 @@ const People = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="filter-group">
-          <button className="filter-btn active">All</button>
-          <button className="filter-btn">Morning</button>
-          <button className="filter-btn">Afternoon</button>
-        </div>
       </div>
 
       <div className="people-list card">
@@ -98,7 +114,7 @@ const People = () => {
             <tr>
               <th>Profile</th>
               <th>Member ID</th>
-              <th>Shift</th>
+              <th>Shift & Days</th>
               <th>Mobile</th>
               <th>Status</th>
               <th>Actions</th>
@@ -114,11 +130,16 @@ const People = () => {
                   </div>
                 </td>
                 <td data-label="Member ID"><code style={{ fontSize: '12px', color: '#4a5568' }}>{person.member_id}</code></td>
-                <td data-label="Shift">
-                  <span className={`shift-tag ${person.shift.toLowerCase()}`}>
-                    <Clock size={14} />
-                    {person.shift}
-                  </span>
+                <td data-label="Shift & Days">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span className={`shift-tag ${person.shift.toLowerCase()}`}>
+                      <Clock size={14} />
+                      {person.shift}
+                    </span>
+                    <span style={{ fontSize: '10px', color: '#718096', fontWeight: 600 }}>
+                      {person.working_days || 'Mon-Sat'}
+                    </span>
+                  </div>
                 </td>
                 <td data-label="Mobile">{person.mobile || <span style={{ color: '#a0aec0' }}>—</span>}</td>
                 <td data-label="Status">
@@ -182,6 +203,22 @@ const People = () => {
                 </select>
               </div>
               <div className="form-group">
+                <label>Working Days</label>
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                  {WEEKDAYS.map(day => (
+                    <button
+                      key={day}
+                      type="button"
+                      className={`filter-btn ${newPerson.workingDays.includes(day) ? 'active' : ''}`}
+                      onClick={() => setNewPerson({...newPerson, workingDays: toggleDay(newPerson.workingDays, day)})}
+                      style={{ padding: '4px 8px', fontSize: '12px' }}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="form-group">
                 <label>Member ID</label>
                 <input
                   type="text"
@@ -236,6 +273,22 @@ const People = () => {
                   onChange={(e) => setEditForm({...editForm, name: e.target.value})}
                   required
                 />
+              </div>
+              <div className="form-group">
+                <label>Working Days</label>
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                  {WEEKDAYS.map(day => (
+                    <button
+                      key={day}
+                      type="button"
+                      className={`filter-btn ${editForm.workingDays.includes(day) ? 'active' : ''}`}
+                      onClick={() => setEditForm({...editForm, workingDays: toggleDay(editForm.workingDays, day)})}
+                      style={{ padding: '4px 8px', fontSize: '12px' }}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="form-group">
                 <label>Shift Assignment</label>

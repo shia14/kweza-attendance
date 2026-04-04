@@ -22,8 +22,11 @@ db.exec(`
     pin TEXT,
     shift TEXT NOT NULL,
     mobile TEXT,
-    status TEXT DEFAULT 'Active'
+    status TEXT DEFAULT 'Active',
+    working_days TEXT DEFAULT 'Mon,Tue,Wed,Thu,Fri,Sat'
   );
+
+  try { db.exec('ALTER TABLE people ADD COLUMN working_days TEXT DEFAULT "Mon,Tue,Wed,Thu,Fri,Sat"'); } catch (e) {}
 
   CREATE TABLE IF NOT EXISTS attendance_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

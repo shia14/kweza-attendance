@@ -53,21 +53,21 @@ app.get('/api/people', (req, res) => {
 });
 
 app.post('/api/people', (req, res) => {
-  const { name, shift, mobile, memberId, pin } = req.body;
-  const info = db.prepare('INSERT INTO people (name, shift, mobile, member_id, pin) VALUES (?, ?, ?, ?, ?)').run(name, shift, mobile || null, memberId, pin);
-  res.json({ id: info.lastInsertRowid, name, shift, mobile: mobile || null, member_id: memberId, pin, status: 'Active' });
+  const { name, shift, mobile, memberId, pin, workingDays } = req.body;
+  const info = db.prepare('INSERT INTO people (name, shift, mobile, member_id, pin, working_days) VALUES (?, ?, ?, ?, ?, ?)').run(name, shift, mobile || null, memberId, pin, workingDays || 'Mon,Tue,Wed,Thu,Fri,Sat');
+  res.json({ id: info.lastInsertRowid, name, shift, mobile: mobile || null, member_id: memberId, pin, status: 'Active', working_days: workingDays || 'Mon,Tue,Wed,Thu,Fri,Sat' });
 });
 
 app.put('/api/people', (req, res) => {
   const id = req.query.id;
   if (!id) return res.status(400).json({ success: false, message: 'Missing ID' });
-  const { name, shift, mobile, pin } = req.body;
+  const { name, shift, mobile, pin, workingDays } = req.body;
   if (!name || !shift) return res.status(400).json({ success: false, message: 'Missing name or shift' });
   // Only update PIN if a new one was provided; otherwise keep existing
   if (pin && pin.trim()) {
-    db.prepare('UPDATE people SET name=?, shift=?, mobile=?, pin=? WHERE id=?').run(name, shift, mobile || null, pin.trim(), id);
+    db.prepare('UPDATE people SET name=?, shift=?, mobile=?, pin=?, working_days=? WHERE id=?').run(name, shift, mobile || null, pin.trim(), workingDays, id);
   } else {
-    db.prepare('UPDATE people SET name=?, shift=?, mobile=? WHERE id=?').run(name, shift, mobile || null, id);
+    db.prepare('UPDATE people SET name=?, shift=?, mobile=?, working_days=? WHERE id=?').run(name, shift, mobile || null, workingDays, id);
   }
   const updated = db.prepare('SELECT * FROM people WHERE id=?').get(id);
   res.json(updated);

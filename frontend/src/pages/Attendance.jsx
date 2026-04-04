@@ -5,7 +5,8 @@ import {
   XCircle, 
   Clock, 
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  Calendar
 } from 'lucide-react';
 import { useAttendance } from '../context/AttendanceContext';
 import { format } from 'date-fns';
@@ -16,9 +17,29 @@ const Attendance = () => {
   const navigate = useNavigate();
   const [viewShift, setViewShift] = useState('All');
   
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
+  const todayDate = new Date();
+  const today = todayDate.toLocaleDateString('en-CA', { timeZone: 'Africa/Johannesburg' });
+  const dayName = format(todayDate, 'EEE'); // Mon, Tue, etc.
+  const isSunday = dayName === 'Sun';
+  const isSaturday = dayName === 'Sat';
 
-  const filteredPeople = people.filter(p => viewShift === 'All' || p.shift === viewShift);
+  const filteredPeople = people.filter(p => {
+    // 1. Sunday: No one works
+    if (isSunday) return false;
+
+    // 2. Saturday: Only Morning shift workers
+    if (isSaturday) {
+      const worksToday = p.working_days ? p.working_days.includes('Sat') : true;
+      const matchesShift = viewShift === 'All' || p.shift === viewShift;
+      return matchesShift && worksToday && p.shift === 'Morning';
+    }
+
+    // 3. Weekdays: Match shift and individual working days
+    const matchesShift = viewShift === 'All' || p.shift === viewShift;
+    const worksToday = p.working_days ? p.working_days.includes(dayName) : true;
+    
+    return matchesShift && worksToday;
+  });
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -58,6 +79,22 @@ const Attendance = () => {
       </div>
 
       <div className="attendance-grid">
+        {isSunday && (
+          <div className="card" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem' }}>
+            <Calendar size={48} style={{ color: '#a0aec0', marginBottom: '1rem' }} />
+            <h3 style={{ color: '#4a5568' }}>Locked for Sunday</h3>
+            <p style={{ color: '#a0aec0' }}>The system is closed today. No shifts are active.</p>
+          </div>
+        )}
+        
+        {!isSunday && isSaturday && filteredPeople.length === 0 && (
+          <div className="card" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem' }}>
+            <Clock size={48} style={{ color: '#a0aec0', marginBottom: '1rem' }} />
+            <h3 style={{ color: '#4a5568' }}>Saturday Half-Day</h3>
+            <p style={{ color: '#a0aec0' }}>Only morning shift workers are scheduled for today.</p>
+          </div>
+        )}
+
         {filteredPeople.map(person => {
           const status = checkAttendanceStatus(person.id, today);
           const log = attendanceLogs.find(l => l.person_id === person.id && l.date === today);
