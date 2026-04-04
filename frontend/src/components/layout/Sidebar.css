@@ -9,8 +9,20 @@
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1000;
-  transition: var(--transition);
+  z-index: 2000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    padding-top: 80px; /* Space for mobile header or just better positioning */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
 
 .sidebar-logo {

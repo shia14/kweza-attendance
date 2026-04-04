@@ -76,10 +76,10 @@ const WorkerHistory = () => {
                 <tbody>
                    {logs.map(log => (
                       <tr key={log.id}>
-                         <td>{format(new Date(log.date), 'EEEE, MMM do, yyyy')}</td>
-                         <td className="time-td"><Clock size={14}/> {log.check_in || '--:--'}</td>
-                         <td className="time-td"><Clock size={14}/> {log.check_out || '--:--'}</td>
-                         <td>
+                         <td data-label="Date">{format(new Date(log.date), 'EEEE, MMM do, yyyy')}</td>
+                         <td data-label="Arrival" className="time-td"><Clock size={14}/> {log.check_in || '--:--'}</td>
+                         <td data-label="Departure" className="time-td"><Clock size={14}/> {log.check_out || '--:--'}</td>
+                         <td data-label="Status">
                             <span className={`status-pill ${log.status?.toLowerCase() || 'attended'}`}>
                                {log.status || 'Attended'}
                             </span>

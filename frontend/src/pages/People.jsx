@@ -107,24 +107,24 @@ const People = () => {
           <tbody>
             {filteredPeople.map((person) => (
               <tr key={person.id} className="table-row">
-                <td className="user-info">
+                <td data-label="Profile" className="user-info">
                   <div className="avatar">{person.name.charAt(0)}</div>
                   <div className="user-details">
                     <p className="user-name">{person.name}</p>
                   </div>
                 </td>
-                <td><code style={{ fontSize: '12px', color: '#4a5568' }}>{person.member_id}</code></td>
-                <td>
+                <td data-label="Member ID"><code style={{ fontSize: '12px', color: '#4a5568' }}>{person.member_id}</code></td>
+                <td data-label="Shift">
                   <span className={`shift-tag ${person.shift.toLowerCase()}`}>
                     <Clock size={14} />
                     {person.shift}
                   </span>
                 </td>
-                <td>{person.mobile || <span style={{ color: '#a0aec0' }}>—</span>}</td>
-                <td>
+                <td data-label="Mobile">{person.mobile || <span style={{ color: '#a0aec0' }}>—</span>}</td>
+                <td data-label="Status">
                   <span className="status-badge active">{person.status}</span>
                 </td>
-                <td className="actions">
+                <td data-label="Actions" className="actions">
                   <button
                     className="icon-btn edit"
                     title="Edit"

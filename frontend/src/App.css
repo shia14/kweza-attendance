@@ -5,12 +5,65 @@
   overflow-x: hidden;
 }
 
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1rem;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1050;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.menu-toggle {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sub);
+}
+
+.mobile-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.sidebar-overlay.visible {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .main-content {
   flex: 1;
   margin-left: 260px; /* Width of Sidebar */
   background-color: var(--bg-sub);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
 }
 
 /* Common Components across pages */
@@ -80,4 +133,49 @@
   border-radius: var(--radius-lg);
   padding: 2.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+    padding-top: 72px; /* Increased space for mobile header */
+  }
+
+  .mobile-header {
+    display: flex;
+    z-index: 1050; /* Ensure it stays on top */
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .modal {
+    padding: 1.5rem;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 1rem;
+    position: relative;
+    z-index: 2100;
+  }
+
+  .modal-overlay {
+    z-index: 2000;
+    padding: 1rem;
+    align-items: flex-start; /* Better for tall modals on mobile */
+    padding-top: 5rem;
+  }
+
+  .page-header .primary-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

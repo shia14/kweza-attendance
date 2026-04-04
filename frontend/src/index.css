@@ -75,3 +75,17 @@ a {
 .animate-fade-in {
   animation: fadeIn 0.4s ease forwards;
 }
+
+/* Global Mobile Utilities */
+@media (max-width: 1024px) {
+  html, body {
+    font-size: 14px;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  .no-scroll {
+    overflow: hidden;
+  }
+}

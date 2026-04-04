@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import './Sidebar.css';
 
-const Sidebar = ({ onLogout }) => {
+const Sidebar = ({ onLogout, isOpen, onClose }) => {
   const menuItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
     { name: 'Manage People', icon: <Users size={20} />, path: '/people' },
@@ -25,13 +25,14 @@ const Sidebar = ({ onLogout }) => {
   ];
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <NavLink 
             key={item.name} 
             to={item.path} 
             className={({ isActive }) => isActive ? 'sidebar-item active' : 'sidebar-item'}
+            onClick={onClose}
           >
             {item.icon}
             <span className="sidebar-item-text">{item.name}</span>

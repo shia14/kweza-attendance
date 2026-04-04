@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import People from './pages/People';
@@ -14,7 +15,8 @@ import { AttendanceProvider } from './context/AttendanceContext';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(!!localStorage.getItem('token'));
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogin = (token) => {
     localStorage.setItem('token', token);
@@ -26,6 +28,10 @@ function App() {
     setIsAuthenticated(false);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
   }
@@ -33,8 +39,18 @@ function App() {
   return (
     <Router>
       <AttendanceProvider>
-        <div className="app-container">
-          <Sidebar onLogout={handleLogout} />
+        <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+          <div className="mobile-header">
+            <button className="menu-toggle" onClick={toggleSidebar}>
+              {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <span className="mobile-title">Kweza Admin</span>
+          </div>
+
+          <Sidebar onLogout={handleLogout} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+          
+          <div className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} onClick={() => setIsSidebarOpen(false)} />
+
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />

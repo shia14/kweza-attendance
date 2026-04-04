@@ -146,13 +146,66 @@
 
 @media (max-width: 768px) {
   .login-card-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
     max-width: 450px;
+    height: auto;
+    min-height: auto;
+    margin: 1rem;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.25);
   }
+
   .login-logo-section {
-    display: none;
+    display: flex;
+    padding: 2.5rem 2rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
   }
+
+  .login-logo {
+    height: 150px;
+    width: auto;
+    position: relative;
+    top: 5px;
+    margin-bottom: 0;
+  }
+
+  .login-tagline {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    max-width: 120px;
+    text-align: left;
+  }
+
   .login-form-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .login-form-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .login-form-section p {
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .login-btn {
+    padding: 1.1rem;
+    font-size: 1.1rem;
+  }
+
+  .login-footer {
+    position: static;
+    margin-top: 2rem;
+    text-align: center;
+    padding: 0 1rem;
+    color: white;
   }
 }
